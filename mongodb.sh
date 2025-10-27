@@ -25,26 +25,26 @@ fi
 
 cp mongo.repo /etc/yum.repos.d/mongo.repo
 
-VALIDATE $? "Copied Mongorepo" &>> LOG_FILE
+VALIDATE $? "Copied Mongorepo" &>> $LOG_FILE
 
 dnf install mongodb-org -y 
 
-VALIDATE $? "Installed Mongorepo" &>> LOG_FILE
+VALIDATE $? "Installed Mongorepo" &>> $LOG_FILE
 
 systemctl enable mongod
 
-VALIDATE $? "Enabled Mongorepo" &>> LOG_FILE
+VALIDATE $? "Enabled Mongorepo" &>> $LOG_FILE
 
 systemctl start mongod
 
-VALIDATE $? "Started Mongorepo" &>> LOG_FILE
+VALIDATE $? "Started Mongorepo" &>> $LOG_FILE
 
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf &>> LOG_FILE
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf &>> $LOG_FILE
 
-VALIDATE $? "Remote access to mongodb" &>> LOG_FILE
+VALIDATE $? "Remote access to mongodb" &>> $LOG_FILE
 
 systemctl restart mongod
 
-VALIDATE $? "Restarted mongodb" &>> LOG_FILE
+VALIDATE $? "Restarted mongodb" &>> $LOG_FILE
 
 
