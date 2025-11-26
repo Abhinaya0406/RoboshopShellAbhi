@@ -7,9 +7,9 @@ Y="\e[33m"
 N="\e[0m"
 
 TIMESTAMP=$(date +%F-%H-%M-%S)
-LOGFILE="/tmp/$0-$TIMESTAMP.log"
+LOG_FILE="/tmp/$0-$TIMESTAMP.log"
 
-echo "script started executing at $TIMESTAMP" &>> $LOGFILE
+echo "script started executing at $TIMESTAMP" &>> $LOG_FILE
 
 VALIDATE(){
     if [ $1 -ne 0 ]
@@ -43,7 +43,7 @@ VALIDATE $? "Enabled Mongorepo"
 
 systemctl start mongod &>> $LOG_FILE
 
-VALIDATE $? "Started Mongorepo" &>> $LOG_FILE
+VALIDATE $? "Started Mongorepo" 
 
 sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf &>> $LOG_FILE
 
