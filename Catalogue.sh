@@ -1,84 +1,95 @@
 #!/bin/bash
 
 ID=$(id -u)
-TIMESTAMP=$(date +%F-%H-%M)
-LOG_FILE="/tmp/$0_$TIMESTAMP.log"
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
 
-if [ $ID -ne 0 ]
-	then
-		echo "Please try with root access"
-		exit 1
-	else
-		echo "Root User"
-fi
+TIMESTAMP=$(date +%F-%H-%M-%S)
+LOG_FILE="/tmp/$0-$TIMESTAMP.log"
 
+echo "script started executing at $TIMESTAMP" &>> $LOG_FILE
 
-VALIDATE() {
-	echo "validating $PACKAGE"
-if [ $1 -ne 0 ]
-	then
-		echo "FAILED $2" 
-	else
-		echo "SUCCESS $2"
-fi
+VALIDATE(){
+    if [ $1 -ne 0 ]
+    then
+        echo -e "$2 ... $R FAILED $N"
+        exit 1
+    else
+        echo -e "$2 ... $G SUCCESS $N"
+    fi
 }
 
-dnf module disable nodejs -y
+if [ $ID -ne 0 ]
+then
+    echo -e "$R ERROR:: Please run this script with root access $N"
+    exit 1 # you can give other than 0
+else
+    echo "You are root user"
+fi # fi means reverse of if, indicating condition end
 
-VALIDATE $? "Disabling Current NodeJs" &>> $LOG_FILE
+dnf module disable nodejs -y &>> $LOG_FILE
 
-dnf module enable nodejs:18 -y
+VALIDATE $? "Disabling Current NodeJs" 
 
-VALIDATE $? "Enabling NodeJs 18" &>> $LOG_FILE
+dnf module enable nodejs:18 -y &>> $LOG_FILE
 
-dnf install nodejs -y
+VALIDATE $? "Enabling NodeJs 18" 
 
-VALIDATE $? "Installing Node Js 18" &>> $LOG_FILE
+dnf install nodejs -y &>> $LOG_FILE
 
-useradd roboshop
+VALIDATE $? "Installing Node Js 18" 
 
-VALIDATE $? "Creating Roboshop User" &>> $LOG_FILE
+useradd roboshop &>> $LOG_FILE
 
-mkdir /app
+VALIDATE $? "Creating Roboshop User" 
 
-VALIDATE $? "Creating AppDirectory" &>> $LOG_FILE
+mkdir /app &>> $LOG_FILE
 
-curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+VALIDATE $? "Creating AppDirectory" 
 
-VALIDATE $? "Downloading Catalogue " &>> $LOG_FILE
+curl -o /tmp/catalogue.zip https://roboshop-builds.s3.amazonaws.com/catalogue.zip  &>> $LOG_FILE
 
-cd /app 
+VALIDATE $? "Downloading Catalogue application"
 
-unzip /tmp/catalogue.zip
+cd /app &>> $LOG_FILE
 
-VALIDATE $? "UnZipping Catalogue " &>> $LOG_FILE
+unzip /tmp/catalogue.zip &>> $LOG_FILE
 
-npm install 
+VALIDATE $? "UnZipping Catalogue " 
 
-VALIDATE $? "Installing Dependencies" &>> $LOG_FILE
+npm install &>> $LOG_FILE
 
-cp /home/centos/RoboshopShellAbhi/Catalogue.service /etc/systemd/system/catalogue.service
+VALIDATE $? "Installing Dependencies" 
 
-VALIDATE $? "Copied catalogue service file" &>> $LOG_FILE
+#use absolute path because catalogue.service exists there
+cp /home/centos/RoboshopShellAbhi/Catalogue.service /etc/systemd/system/catalogue.service &>> $LOG_FILE
 
-systemctl daemon-reload
+VALIDATE $? "Copied catalogue service file" 
 
-VALIDATE $? "Cdaemon reload complete" &>> $LOG_FILE
+systemctl daemon-reload &>> $LOG_FILE
 
-systemctl start catalogue
+VALIDATE $? "daemon reload complete" 
 
-VALIDATE $? "started catalogue" &>> $LOG_FILE
+systemctl enable catalogue &>> $LOG_FILE
 
-cp /home/centos/RoboshopShellAbhi/mongo.repo  /etc/yum.repos.d/mongo.repo
+VALIDATE $? "enabled catalogue" 
 
-VALIDATE $? "copying mongo repo" &>> $LOG_FILE
+systemctl start catalogue &>> $LOG_FILE
 
-dnf install mongodb-org-shell -y
+VALIDATE $? "started catalogue" 
 
-VALIDATE $? "Installed mongo repo" &>> $LOG_FILE
+cp /home/centos/RoboshopShellAbhi/mongo.repo  /etc/yum.repos.d/mongo.repo &>> $LOG_FILE
 
-mongo --host mongodb.laddu.shop </app/schema/catalogue.js
+VALIDATE $? "copiedng mongo repo" 
 
-VALIDATE $? "loading catalogue schema to mongodb" &>> $LOG_FILE
+dnf install mongodb-org-shell -y &>> $LOG_FILE
+
+VALIDATE $? "Installed mongo db client" 
+
+mongo --host mongodb.laddu.shop </app/schema/catalogue.js &>> $LOG_FILE
+
+VALIDATE $? "loading catalogue schema to mongodb" 
 
 
