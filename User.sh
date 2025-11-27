@@ -1,61 +1,92 @@
 #!/bin/bash
 
 ID=$(id -u)
-TIMESTAMP=$(date +%F-%H-%M)
-LOG_FILE="/tmp/$0_$TIMESTAMP.log"
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
 
-if [ $ID -ne 0 ]
-	then
-		echo "Please try with root access"
-		exit 1
-	else
-		echo "Root User"
-fi
+TIMESTAMP=$(date +%F-%H-%M-%S)
+LOG_FILE="/tmp/$0-$TIMESTAMP.log"
 
+echo "script started executing at $TIMESTAMP" &>> $LOG_FILE
 
-VALIDATE() {
-	echo "validating $PACKAGE"
-if [ $1 -ne 0 ]
-	then
-		echo "FAILED $2" 
-	else
-		echo "SUCCESS $2"
-fi
+VALIDATE(){
+    if [ $1 -ne 0 ]
+    then
+        echo -e "$2 ... $R FAILED $N"
+        exit 1
+    else
+        echo -e "$2 ... $G SUCCESS $N"
+    fi
 }
 
-dnf module disable nodejs -y
+if [ $ID -ne 0 ]
+then
+    echo -e "$R ERROR:: Please run this script with root access $N"
+    exit 1 # you can give other than 0
+else
+    echo "You are root user"
+fi # fi means reverse of if, indicating condition end
 
-VALIDATE() ?! unistalled nodejs
+dnf module disable nodejs -y &>> $LOG_FILE
 
-dnf module enable nodejs:18 -y
+VALIDATE() $? "unistalled nodejs"
 
-VALIDATE() ?! installed nodejs
+dnf module enable nodejs:18 -y &>> $LOG_FILE
 
-dnf install nodejs -y
+VALIDATE() $? "enabled nodejs"
 
-useradd roboshop
+dnf install nodejs -y &>> $LOG_FILE
 
-mkdir /app
+VALIDATE() $? "installed nodejs"
 
-curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip
+useradd roboshop &>> $LOG_FILE
 
-cd /app 
+VALIDATE() $? "User craeted"
 
-unzip /tmp/user.zip
+mkdir /app &>> $LOG_FILE
 
-cd /app 
+VALIDATE() $? "dir craeted"
 
-npm install 
+curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>> $LOG_FILE
 
-vim /etc/systemd/system/user.service
+VALIDATE() $? "downloading application"
 
-systemctl daemon-reload
+cd /app  &>> $LOG_FILE
 
-systemctl enable user 
+unzip /tmp/user.zip &>> $LOG_FILE
 
-systemctl start user
+VALIDATE() $? "unzip application" 
 
+npm install  &>> $LOG_FILE
 
-dnf install mongodb-org-shell -y
+VALIDATE() $? "Installing dependencies"
 
-mongo --host MONGODB-SERVER-IPADDRESS </app/schema/user.js
+cp  cp /home/centos/RoboshopShellAbhi/user.service /etc/systemd/system/user.service &>> $LOG_FILE
+
+VALIDATE() $? "copied service"
+
+systemctl daemon-reload &>> $LOG_FILE
+
+VALIDATE() $? "daemon reloaded"
+
+systemctl enable user  &>> $LOG_FILE
+
+VALIDATE() $? "user enabled"
+
+systemctl start user &>> $LOG_FILE
+
+VALIDATE() $? "user started"
+
+cp /home/centos/RoboshopShellAbhi/mongo.repo  /etc/yum.repos.d/mongo.repo &>> $LOG_FILE
+
+VALIDATE $? "copiedng mongo repo" 
+
+dnf install mongodb-org-shell -y &>> $LOG_FILE
+
+VALIDATE $? "Installed mongo db client" 
+
+mongo --host mongodb.laddu.shop </app/schema/catalogue.js &>> $LOG_FILE
+
+VALIDATE $? "loading catalogue schema to mongodb" 

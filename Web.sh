@@ -23,34 +23,34 @@ if [ $1 -ne 0 ]
 fi
 }
 
-dnf install nginx -y
+dnf install nginx -y &>> $LOG_FILE
 
-VALIDATE $? "Installed nginix file" &>> $LOG_FILE
+VALIDATE $? "Installed nginix file" 
 
-systemctl enable nginx
+systemctl enable nginx &>> $LOG_FILE
 
-VALIDATE $? "enabled nginix file" &>> $LOG_FILE
+VALIDATE $? "enabled nginix file" 
 
-systemctl start nginx
+systemctl start nginx &>> $LOG_FILE
 
-VALIDATE $? "started nginix service" &>> $LOG_FILE
+VALIDATE $? "started nginix service" 
 
-rm -rf /usr/share/nginx/html/*
+rm -rf /usr/share/nginx/html/* &>> $LOG_FILE
 
-VALIDATE $? "removed html" &>> $LOG_FILE
+VALIDATE $? "removed html" 
 
-curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip
+curl -o /tmp/web.zip https://roboshop-builds.s3.amazonaws.com/web.zip &>> $LOG_FILE
 
-VALIDATE $? "downloaded web.zip to tmp" &>> $LOG_FILE
+VALIDATE $? "downloaded web.zip to tmp" 
 
-cd /usr/share/nginx/html
+cd /usr/share/nginx/html &>> $LOG_FILE
 
-VALIDATE $? "downloaded web.zip to tmp" &>> $LOG_FILE
+VALIDATE $? "html upadted" 
 
-unzip /tmp/web.zip
+unzip /tmp/web.zip &>> $LOG_FILE
 
-vim /etc/nginx/default.d/roboshop.conf 
+cp /home/centos/RoboshopShellAbhi/web.conf  /etc/nginx/default.d/roboshop.conf  
 
-vim /etc/nginx/default.d/roboshop.conf 
+systemctl restart nginx &>> $LOG_FILE
 
-systemctl restart nginx 
+VALIDATE $? "hnginx restarted"
