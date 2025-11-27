@@ -55,6 +55,8 @@ VALIDATE $? "html upadted"
 
 unzip -o /tmp/web.zip &>> $LOG_FILE
 
+VALIDATE $? "htunzip web ml upadted" 
+
 cp /home/centos/RoboshopShellAbhi/roboshop.conf  /etc/nginx/default.d/roboshop.conf
 
 VALIDATE $? "copied"
