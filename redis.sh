@@ -8,6 +8,7 @@ N="\e[0m"
 
 TIMESTAMP=$(date +%F-%H-%M-%S)
 LOG_FILE="/tmp/$0-$TIMESTAMP.log"
+exec &>$LOG_FILE
 
 echo "script started executing at $TIMESTAMP" &>> $LOG_FILE
 
@@ -29,26 +30,26 @@ else
     echo "You are root user"
 fi # fi means reverse of if, indicating condition end
 
-dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y &>> $LOG_FILE
+dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
 
 VALIDATE $? "installing remi release"
 
-dnf module enable redis:remi-6.2 -y &>> $LOG_FILE
+dnf module enable redis:remi-6.2 -y 
 
 VALIDATE $? "enabling redis"
 
-dnf install redis -y &>> $LOG_FILE
+dnf install redis -y 
 
 VALIDATE $? "instaling redis"
 
-sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf &>> $LOG_FILE
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/redis.conf
 
 VALIDATE $? "remote connections redis" 
 
-systemctl enable redis &>> $LOG_FILE
+systemctl enable redis
 
 VALIDATE $? "enable redis"
 
-systemctl start redis &>> $LOG_FILE
+systemctl start redis 
 
 VALIDATE $? "start redis"
