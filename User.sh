@@ -31,53 +31,53 @@ fi # fi means reverse of if, indicating condition end
 
 dnf module disable nodejs -y &>> $LOG_FILE
 
-VALIDATE() $? "unistalled nodejs"
+VALIDATE $? "unistalled nodejs"
 
 dnf module enable nodejs:18 -y &>> $LOG_FILE
 
-VALIDATE() $? "enabled nodejs"
+VALIDATE $? "enabled nodejs"
 
 dnf install nodejs -y &>> $LOG_FILE
 
-VALIDATE() $? "installed nodejs"
+VALIDATE $? "installed nodejs"
 
 useradd roboshop &>> $LOG_FILE
 
-VALIDATE() $? "User craeted"
+VALIDATE $? "User craeted"
 
 mkdir /app &>> $LOG_FILE
 
-VALIDATE() $? "dir craeted"
+VALIDATE $? "dir craeted"
 
 curl -L -o /tmp/user.zip https://roboshop-builds.s3.amazonaws.com/user.zip &>> $LOG_FILE
 
-VALIDATE() $? "downloading application"
+VALIDATE $? "downloading application"
 
 cd /app  &>> $LOG_FILE
 
 unzip /tmp/user.zip &>> $LOG_FILE
 
-VALIDATE() $? "unzip application" 
+VALIDATE $? "unzip application" 
 
 npm install  &>> $LOG_FILE
 
-VALIDATE() $? "Installing dependencies"
+VALIDATE $? "Installing dependencies"
 
 cp  cp /home/centos/RoboshopShellAbhi/user.service /etc/systemd/system/user.service &>> $LOG_FILE
 
-VALIDATE() $? "copied service"
+VALIDATE $? "copied service"
 
 systemctl daemon-reload &>> $LOG_FILE
 
-VALIDATE() $? "daemon reloaded"
+VALIDATE $? "daemon reloaded"
 
 systemctl enable user  &>> $LOG_FILE
 
-VALIDATE() $? "user enabled"
+VALIDATE $? "user enabled"
 
 systemctl start user &>> $LOG_FILE
 
-VALIDATE() $? "user started"
+VALIDATE $? "user started"
 
 cp /home/centos/RoboshopShellAbhi/mongo.repo  /etc/yum.repos.d/mongo.repo &>> $LOG_FILE
 
@@ -89,4 +89,4 @@ VALIDATE $? "Installed mongo db client"
 
 mongo --host mongodb.laddu.shop </app/schema/catalogue.js &>> $LOG_FILE
 
-VALIDATE $? "loading catalogue schema to mongodb" 
+VALIDATE $? "loading catalogue schema to mongodb" git
