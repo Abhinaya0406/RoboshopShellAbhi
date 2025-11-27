@@ -8,7 +8,7 @@ N="\e[0m"
 
 TIMESTAMP=$(date +%F-%H-%M-%S)
 LOG_FILE="/tmp/$0-$TIMESTAMP.log"
-exec &>$LOG_FILE
+
 
 echo "script started executing at $TIMESTAMP" &>> $LOG_FILE
 
@@ -30,7 +30,7 @@ else
     echo "You are root user"
 fi # fi means reverse of if, indicating condition end
 
-dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y
+dnf install https://rpms.remirepo.net/enterprise/remi-release-8.rpm -y &>> $LOG_FILE
 
 VALIDATE $? "installing remi release"
 
