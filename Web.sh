@@ -55,7 +55,7 @@ VALIDATE $? "html upadted"
 
 unzip /tmp/web.zip &>> $LOG_FILE
 
-cp /home/centos/RoboshopShellAbhi/web.conf  /etc/nginx/default.d/roboshop.conf  
+cp /home/centos/RoboshopShellAbhi/roboshop.conf  /etc/nginx/default.d/roboshop.conf
 
 systemctl restart nginx &>> $LOG_FILE
 
