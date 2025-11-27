@@ -87,6 +87,6 @@ dnf install mongodb-org-shell -y &>> $LOG_FILE
 
 VALIDATE $? "Installed mongo db client" 
 
-mongo --host mongodb.laddu.shop </app/schema/catalogue.js &>> $LOG_FILE
+mongo --host mongodb.laddu.shop </app/schema/user.js &>> $LOG_FILE
 
 VALIDATE $? "loading catalogue schema to mongodb" git
