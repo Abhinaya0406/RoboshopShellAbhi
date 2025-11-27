@@ -53,9 +53,11 @@ cd /usr/share/nginx/html &>> $LOG_FILE
 
 VALIDATE $? "html upadted" 
 
-unzip /tmp/web.zip &>> $LOG_FILE
+unzip -o /tmp/web.zip &>> $LOG_FILE
 
 cp /home/centos/RoboshopShellAbhi/roboshop.conf  /etc/nginx/default.d/roboshop.conf
+
+VALIDATE $? "copied"
 
 systemctl restart nginx &>> $LOG_FILE
 
